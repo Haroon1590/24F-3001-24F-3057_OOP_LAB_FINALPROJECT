@@ -1,122 +1,103 @@
 #include "Stronghold.h"
-#include <iostream>
-#include <cmath>
-#include <algorithm>
-using namespace std;
 
-// Remove all constant definitions as they are now in GameConstants.h
-
-Economy::Economy(int g) : gold(g), taxRate(10), inflation(0), debt(0) {
-    if (g < 0) gold = 0;
-    
-    // Initialize resources with starting values
-    resources.food_stores = 100;
-    resources.housing = 50;
-    resources.military_equipment = 25;
-    resources.food = 100;
-    resources.wood = 50;
-    resources.stone = 25;
-    resources.iron = 10;
-    resources.storage = 1000;
+Economy::Economy() : treasury(1000), taxRate(10), inflationRate(2) {
 }
 
-void Economy::tax(Society& soc) {
-    int totalTaxes = 0;
-    for (int i = 0; i < soc.getClassCount(); ++i) {
-        SocialClass* sc = soc.getClassByIndex(i);
-        if (sc != nullptr) {
-            totalTaxes += sc->payTaxes(taxRate);
-        }
-    }
-    addGold(totalTaxes);
+Economy::Economy(int treasury, int taxRate)
+    : treasury(treasury), taxRate(taxRate), inflationRate(2) {
 }
 
-void Economy::spend(int amt) {
-    if (amt <= gold) {
-        gold -= amt;
-    } else {
-        int deficit = amt - gold;
-        gold = 0;
-        borrow(deficit);
-    }
-}
-
-void Economy::war() {
-    inflation += 5;
-    debt += 100;
-}
-
-void Economy::peace() {
-    inflation = max(0, inflation - 2);
-    debt = max(0, debt - 50);
-}
-
-void Economy::print() const {
-    cout << "Economy: " << gold << " gold, Tax Rate: " << taxRate 
-         << "%, Inflation: " << inflation << "%, Debt: " << debt << endl;
-    
-    cout << "Resources - Food: " << resources.food 
-         << ", Wood: " << resources.wood 
-         << ", Stone: " << resources.stone 
-         << ", Iron: " << resources.iron << endl;
-}
-
-int Economy::getGold() const {
-    return gold;
-}
-
-void Economy::setTax(int r) {
-    taxRate = max(MIN_TAX_RATE, min(MAX_TAX_RATE, r));
+int Economy::getTreasury() const {
+    return treasury;
 }
 
 int Economy::getTaxRate() const {
     return taxRate;
 }
 
-int Economy::getInflation() const {
-    return inflation;
+int Economy::getInflationRate() const {
+    return inflationRate;
 }
 
-int Economy::getDebt() const {
-    return debt;
+void Economy::setTreasury(int treasury) {
+    this->treasury = treasury;
 }
 
-void Economy::borrow(int amt) {
-    debt += amt;
-    inflation += (amt / 100);
+void Economy::setTaxRate(int taxRate) {
+    this->taxRate = taxRate;
+    if (this->taxRate < 0) this->taxRate = 0;
+    if (this->taxRate > 50) this->taxRate = 50;
 }
 
-void Economy::repay(int amt) {
-    if (amt <= gold) {
-        gold -= amt;
-        debt = max(0, debt - amt);
+void Economy::setInflationRate(int rate) {
+    this->inflationRate = rate;
+    if (this->inflationRate < 0) this->inflationRate = 0;
+    if (this->inflationRate > 30) this->inflationRate = 30;
+}
+
+void Economy::collectTaxes(const Population& population) {
+    int peasantTax = population.getPeasants() * 1 * taxRate / 100;
+    int merchantTax = population.getMerchants() * 5 * taxRate / 100;
+    int nobleTax = population.getNobles() * 20 * taxRate / 100;
+
+    int totalTaxes = peasantTax + merchantTax + nobleTax;
+    addToTreasury(totalTaxes);
+
+    std::cout << "Collected " << totalTaxes << " gold in taxes." << std::endl;
+}
+
+void Economy::payMilitary(const Military& military) {
+    int infantryCost = military.getInfantry() * 2;
+    int archerCost = military.getArchers() * 3;
+    int cavalryCost = military.getCavalry() * 5;
+
+    int totalMilitaryCost = infantryCost + archerCost + cavalryCost;
+
+    if (hasSufficientFunds(totalMilitaryCost)) {
+        spendTreasury(totalMilitaryCost);
+        std::cout << "Paid " << totalMilitaryCost << " gold to military forces." << std::endl;
+    }
+    else {
+        std::cout << "WARNING: Insufficient funds to pay military! Only paid " << treasury << " gold." << std::endl;
+        setTreasury(0);
     }
 }
 
-void Economy::addGold(int g) {
-    gold += g;
+void Economy::adjustInflation() {
+    // Simple inflation model based on treasury size and tax rate
+    if (treasury > 5000 && taxRate < 15) {
+        inflationRate += 1;
+    }
+    else if (treasury < 1000 || taxRate > 30) {
+        inflationRate -= 1;
+    }
+
+    // Keep inflation in reasonable bounds
+    if (inflationRate < 0) inflationRate = 0;
+    if (inflationRate > 30) inflationRate = 30;
 }
 
-void Economy::setInflation(int i) {
-    inflation = max(0, i);
+void Economy::spendTreasury(int amount) {
+    if (amount <= treasury) {
+        treasury -= amount;
+    }
+    else {
+        treasury = 0;
+    }
 }
 
-void Economy::setDebt(int d) {
-    debt = max(0, d);
+void Economy::addToTreasury(int amount) {
+    treasury += amount;
 }
 
-double Economy::calculateWealthRatio(SocialClass* sc, double totalWealth) const {
-    if (totalWealth == 0) return 0.0;
-    return sc->getWealth() / totalWealth;
+bool Economy::hasSufficientFunds(int amount) const {
+    return treasury >= amount;
 }
 
-int Economy::calculateDynamicTaxRate(double wealthRatio) const {
-    double baseRate = taxRate;
-    double wealthFactor = wealthRatio * WEALTH_TAX_MULTIPLIER;
-    double dynamicRate = baseRate * (1.0 + wealthFactor);
-    return static_cast<int>(std::max(static_cast<double>(MIN_TAX_RATE), 
-                                   std::min(static_cast<double>(MAX_TAX_RATE), dynamicRate)));
-}
-ResourceData& Economy::getResources() {
-    return resources;
+void Economy::displayEconomy() const {
+    std::cout << "\n===== ECONOMY =====\n";
+    std::cout << "Treasury: " << treasury << " gold" << std::endl;
+    std::cout << "Tax Rate: " << taxRate << "%" << std::endl;
+    std::cout << "Inflation Rate: " << inflationRate << "%" << std::endl;
+    std::cout << "==================\n";
 }

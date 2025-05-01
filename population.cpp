@@ -1,70 +1,126 @@
 #include "Stronghold.h"
-Population::Population(int t) : total(t), sick(0), revolting(0), growthRate(0.05), mortality(0.02), housing(t), famine(false), plague(false) {}
-void Population::update(int food) {
-    if (!famine && !plague && housing >= total)
-        total += int(total * growthRate);
-    int dead = int(total * mortality);
-    total -= dead;
-    if (famine) {
-        total -= total / 20;
-        revolting += total / 50;
+
+Population::Population() : peasants(100), merchants(20), nobles(5), happiness(50) {
+}
+
+Population::Population(int peasants, int merchants, int nobles)
+    : peasants(peasants), merchants(merchants), nobles(nobles), happiness(50) {
+}
+
+int Population::getPeasants() const {
+    return peasants;
+}
+
+int Population::getMerchants() const {
+    return merchants;
+}
+
+int Population::getNobles() const {
+    return nobles;
+}
+
+int Population::getTotalPopulation() const {
+    return peasants + merchants + nobles;
+}
+
+int Population::getHappiness() const {
+    return happiness;
+}
+
+void Population::setPeasants(int peasants) {
+    this->peasants = peasants;
+}
+
+void Population::setMerchants(int merchants) {
+    this->merchants = merchants;
+}
+
+void Population::setNobles(int nobles) {
+    this->nobles = nobles;
+}
+
+void Population::setHappiness(int happiness) {
+    this->happiness = happiness;
+    if (this->happiness > 100) this->happiness = 100;
+    if (this->happiness < 0) this->happiness = 0;
+}
+
+void Population::updatePopulation(const Resource& resources, int taxRate) {
+    // Calculate food availability per person
+    int totalPop = getTotalPopulation();
+    if (totalPop == 0) return;
+
+    double foodPerPerson = static_cast<double>(resources.getFood()) / totalPop;
+
+    // Population growth or decline based on food and happiness
+    if (foodPerPerson >= 2.0 && happiness > 50) {
+        // Population growth
+        peasants += peasants * 0.05;
+        merchants += merchants * 0.03;
+        nobles += nobles * 0.01;
     }
-    if (plague) {
-        sick += total / 10; total -= sick / 5;
+    else if (foodPerPerson < 1.0 || happiness < 30) {
+        // Population decline
+        peasants -= peasants * 0.08;
+        merchants -= merchants * 0.05;
+        nobles -= nobles * 0.02;
     }
-    if (total > housing)
-        revolting += (total - housing) / 10;
-    if (total < 0)
-        total = 0;
-    if (revolting > total)
-        revolting = total;
+
+    // Tax rate affects happiness
+    if (taxRate > 20) {
+        decreaseHappiness((taxRate - 20) / 5);
+    }
+    else {
+        increaseHappiness(2);
+    }
+
+    // Ensure no negative population
+    if (peasants < 0) peasants = 0;
+    if (merchants < 0) merchants = 0;
+    if (nobles < 0) nobles = 0;
 }
-void Population::print() const {
-    cout << "\n=== Population ===\nTotal: " << total << " Sick: " << sick << " Revolting: " << revolting << " Housing: " << housing << endl;
-    if (famine)
-        cout << "!!! FAMINE !!!\n";
-    if (plague)
-        cout << "!!! PLAGUE !!!\n";
+
+void Population::increaseHappiness(int amount) {
+    happiness += amount;
+    if (happiness > 100) happiness = 100;
 }
-int Population::getTotal() const {
-    return total;
+
+void Population::decreaseHappiness(int amount) {
+    happiness -= amount;
+    if (happiness < 0) happiness = 0;
 }
-void Population::grow(int n) {
-    total += n;
+
+bool Population::isRevolting() const {
+    return happiness < 20;
 }
-void Population::shrink(int n) {
-    total -= n;
-    if (total < 0)
-        total = 0;
+
+void Population::handleRevolt() {
+    std::cout << "\n*** REVOLT IN THE KINGDOM! ***\n";
+    std::cout << "The population is unhappy and revolting!\n";
+
+    // Consequences of revolt
+    peasants -= peasants * 0.1;
+    merchants -= merchants * 0.15;
+
+    // Reset happiness to slightly better than revolt level
+    happiness = 25;
 }
-void Population::buildHousing(int n) {
-    housing += n;
-}
-void Population::setFamine(bool b) {
-    famine = b;
-}
-void Population::setPlague(bool b) {
-    plague = b;
-}
-int Population::getHousing() const {
-    return housing;
-}
-int Population::getSick() const {
-    return sick;
-}
-int Population::getRevolting() const {
-    return revolting;
-}
-void Population::cureDisease(int n) {
-    sick -= n;
-    if (sick < 0)
-        sick = 0;
-}
-void Population::suppressRevolt(int n) {
-    revolting -= n;
-    if (revolting < 0)
-        revolting = 0;
-}
-void Population::resetRevolting() {
-    revolting = 0;
+
+void Population::displayPopulation() const {
+    std::cout << "\n===== POPULATION =====\n";
+    std::cout << "Peasants: " << peasants << std::endl;
+    std::cout << "Merchants: " << merchants << std::endl;
+    std::cout << "Nobles: " << nobles << std::endl;
+    std::cout << "Total Population: " << getTotalPopulation() << std::endl;
+    std::cout << "Happiness Level: " << happiness << "/100" << std::endl;
+
+    std::cout << "Happiness Status: ";
+    if (happiness > 80) std::cout << "Very Happy";
+    else if (happiness > 60) std::cout << "Content";
+    else if (happiness > 40) std::cout << "Neutral";
+    else if (happiness > 20) std::cout << "Unhappy";
+    else std::cout << "On the Verge of Revolt!";
+    std::cout << std::endl;
+
+    std::cout << "=====================\n";
 }

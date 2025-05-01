@@ -1,145 +1,97 @@
 #include "Stronghold.h"
-Resources::Resources(int f, int w, int s, int i) : food(f), wood(w), stone(s), iron(i),
-farmProd(10), woodProd(5), stoneProd(3), ironProd(2), foodStore(500), woodStore(300), stoneStore(200), ironStore(100) {}
-void Resources::gather(const char* type, int amt) {
-    if (strcmp(type, "food") == 0) {
-        food += amt;
-        if (food > foodStore)
-            food = foodStore;
-    }
-    else if (strcmp(type, "wood") == 0) {
-        wood += amt;
-        if (wood > woodStore)
-            wood = woodStore;
-    }
-    else if (strcmp(type, "stone") == 0) {
-        stone += amt;
-        if (stone > stoneStore)
-            stone = stoneStore;
-    }
-    else if (strcmp(type, "iron") == 0) {
-        iron += amt;
-        if (iron > ironStore) iron = ironStore;
-    }
-    else
-        cout << "Unknown resource.\n";
+
+Resource::Resource() : food(100), wood(100), stone(50), iron(20) {
 }
-void Resources::consume(const char* type, int amt) {
-    if (strcmp(type, "food") == 0) {
-        food -= amt;
-        if (food < 0) food = 0;
-    }
-    else if (strcmp(type, "wood") == 0) {
-        wood -= amt;
-        if (wood < 0)
-            wood = 0;
-    }
-    else if (strcmp(type, "stone") == 0) {
-        stone -= amt;
-        if (stone < 0)
-            stone = 0;
-    }
-    else if (strcmp(type, "iron") == 0) {
-        iron -= amt;
-        if (iron < 0)
-            iron = 0;
-    }
-    else
-        cout << "Unknown resource.\n";
+
+Resource::Resource(int food, int wood, int stone, int iron)
+    : food(food), wood(wood), stone(stone), iron(iron) {
 }
-int Resources::getFood() const {
+
+int Resource::getFood() const {
     return food;
 }
-int Resources::getWood() const {
+
+int Resource::getWood() const {
     return wood;
 }
-int Resources::getStone() const {
+
+int Resource::getStone() const {
     return stone;
 }
-int Resources::getIron() const {
+
+int Resource::getIron() const {
     return iron;
 }
-void Resources::print() const {
-    cout << "\n=== Resources ===\nFood: " << food << "/" << foodStore << " Wood: " << wood << "/" << woodStore
-        << " Stone: " << stone << "/" << stoneStore << " Iron: " << iron << "/" << ironStore << endl;
+
+void Resource::setFood(int food) {
+    this->food = food;
 }
-void Resources::build(const char* type, int amt) {
-    if (strcmp(type, "farm") == 0) {
-        if (wood >= 10 && stone >= 5) {
-            farmProd += amt;
-            wood -= 10;
-            stone -= 5;
-            cout << "Built farm\n";
-        }
-        else cout << "Need more wood/stone!\n";
-    }
-    else if (strcmp(type, "lumber") == 0) {
-        if (wood >= 5 && stone >= 2) {
-            woodProd += amt; wood -= 5;
-            stone -= 2;
-            cout << "Built lumber mill\n";
-        }
-        else
-            cout << "Need more wood/stone!\n";
-    }
-    else if (strcmp(type, "mine") == 0) {
-        if (wood >= 5 && stone >= 5) {
-            ironProd += amt;
-            wood -= 5;
-            stone -= 5;
-            cout << "Built mine\n";
-        }
-        else
-            cout << "Need more wood/stone!\n";
-    }
-    else
-        cout << "Unknown build!\n";
+
+void Resource::setWood(int wood) {
+    this->wood = wood;
 }
-void Resources::update(int pop) {
-    food += farmProd - pop / 10;
-    if (food > foodStore)
-        food = foodStore;
-    if (food < 0)
-        food = 0;
-    wood += woodProd;
-    if (wood > woodStore)
-        wood = woodStore;
-    stone += stoneProd;
-    if (stone > stoneStore)
-        stone = stoneStore;
-    iron += ironProd;
-    if (iron > ironStore)
-        iron = ironStore;
+
+void Resource::setStone(int stone) {
+    this->stone = stone;
 }
-void Resources::expandStorage(const char* type, int amt) {
-    if (strcmp(type, "food") == 0)
-        foodStore += amt;
-    else if (strcmp(type, "wood") == 0)
-        woodStore += amt;
-    else if (strcmp(type, "stone") == 0)
-        stoneStore += amt;
-    else if (strcmp(type, "iron") == 0)
-        ironStore += amt;
-    else
-        cout << "Unknown storage type.\n";
+
+void Resource::setIron(int iron) {
+    this->iron = iron;
 }
-void Resources::trade(const char* resource, int amount, Economy& eco) {
-    if (strcmp(resource, "food") == 0 && food >= amount) {
+
+void Resource::addFood(int amount) {
+    food += amount;
+}
+
+void Resource::addWood(int amount) {
+    wood += amount;
+}
+
+void Resource::addStone(int amount) {
+    stone += amount;
+}
+
+void Resource::addIron(int amount) {
+    iron += amount;
+}
+
+bool Resource::consumeFood(int amount) {
+    if (food >= amount) {
         food -= amount;
-        eco.addGold(amount * 2);
+        return true;
     }
-    else if (strcmp(resource, "wood") == 0 && wood >= amount) {
+    return false;
+}
+
+bool Resource::consumeWood(int amount) {
+    if (wood >= amount) {
         wood -= amount;
-        eco.addGold(amount * 1);
+        return true;
     }
-    else if (strcmp(resource, "stone") == 0 && stone >= amount) {
+    return false;
+}
+
+bool Resource::consumeStone(int amount) {
+    if (stone >= amount) {
         stone -= amount;
-        eco.addGold(amount * 3);
+        return true;
     }
-    else if (strcmp(resource, "iron") == 0 && iron >= amount) {
+    return false;
+}
+
+bool Resource::consumeIron(int amount) {
+    if (iron >= amount) {
         iron -= amount;
-        eco.addGold(amount * 5);
+        return true;
     }
-    else
-        cout << "Insufficient resources for trade!\n";
+    return false;
+}
+
+void Resource::displayResources() const {
+    std::cout << "\n===== RESOURCES =====\n";
+    std::cout << "Food: " << food << std::endl;
+    std::cout << "Wood: " << wood << std::endl;
+    std::cout << "Stone: " << stone << std::endl;
+    std::cout << "Iron: " << iron << std::endl;
+    std::cout << "=====================\n";
 }
