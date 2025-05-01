@@ -123,7 +123,12 @@ void handleResourceManagement(Kingdom& kingdom) {
         std::cout << "=================================\n";
 
         std::cout << "Enter your choice: ";
-        std::cin >> choice;
+        if (!(std::cin >> choice)) {
+            std::cin.clear();
+            std::cin.ignore(100, '\n');
+            std::cout << "Invalid input. Please enter a number.\n";
+            continue;
+        }
 
         switch (choice) {
         case 1:
@@ -131,46 +136,44 @@ void handleResourceManagement(Kingdom& kingdom) {
             std::cout << "Resources gathered!\n";
             break;
         case 2:
-            std::cout << "Enter amount of food to allocate: ";
-            std::cin >> amount;
-            if (kingdom.getResources().consumeFood(amount)) {
-                std::cout << amount << " food allocated. Population happiness increased.\n";
-                kingdom.getPopulation().increaseHappiness(amount / 10);
-            }
-            else {
-                std::cout << "Not enough food available.\n";
-            }
-            break;
         case 3:
-            std::cout << "Enter amount of wood to allocate: ";
-            std::cin >> amount;
-            if (kingdom.getResources().consumeWood(amount)) {
-                std::cout << amount << " wood allocated for construction.\n";
-            }
-            else {
-                std::cout << "Not enough wood available.\n";
-            }
-            break;
         case 4:
-            std::cout << "Enter amount of stone to allocate: ";
-            std::cin >> amount;
-            if (kingdom.getResources().consumeStone(amount)) {
-                std::cout << amount << " stone allocated for buildings.\n";
+        case 5: {
+            std::cout << "Enter amount to allocate: ";
+            if (!(std::cin >> amount) || amount < 0) {
+                std::cin.clear();
+                std::cin.ignore(100, '\n');
+                std::cout << "Invalid amount. Please enter a positive number.\n";
+                break;
             }
-            else {
-                std::cout << "Not enough stone available.\n";
+
+            bool success = false;
+            switch (choice) {
+                case 2:
+                    success = kingdom.getResources().consumeFood(amount);
+                    if (success) {
+                        kingdom.getPopulation().increaseHappiness(amount / 10);
+                        std::cout << amount << " food allocated. Population happiness increased.\n";
+                    }
+                    break;
+                case 3:
+                    success = kingdom.getResources().consumeWood(amount);
+                    if (success) std::cout << amount << " wood allocated for construction.\n";
+                    break;
+                case 4:
+                    success = kingdom.getResources().consumeStone(amount);
+                    if (success) std::cout << amount << " stone allocated for buildings.\n";
+                    break;
+                case 5:
+                    success = kingdom.getResources().consumeIron(amount);
+                    if (success) std::cout << amount << " iron allocated for weapons.\n";
+                    break;
+            }
+            if (!success) {
+                std::cout << "Not enough resources available.\n";
             }
             break;
-        case 5:
-            std::cout << "Enter amount of iron to allocate: ";
-            std::cin >> amount;
-            if (kingdom.getResources().consumeIron(amount)) {
-                std::cout << amount << " iron allocated for weapons.\n";
-            }
-            else {
-                std::cout << "Not enough iron available.\n";
-            }
-            break;
+        }
         case 0:
             back = true;
             break;
@@ -263,10 +266,13 @@ void handleEconomyManagement(Kingdom& kingdom) {
         std::cin >> choice;
 
         switch (choice) {
-        case 1:
-            kingdom.getEconomy().collectTaxes(kingdom.getPopulation());
-            std::cout << "Taxes collected from the population.\n";
+        case 1: {
+            bool taxesCollected = kingdom.getEconomy().collectTaxes(kingdom.getPopulation());
+            if (taxesCollected) {
+                std::cout << "Taxes collected from the population.\n";
+            }
             break;
+        }
         case 2:
             std::cout << "Enter new tax rate (0-100): ";
             std::cin >> amount;
@@ -278,7 +284,8 @@ void handleEconomyManagement(Kingdom& kingdom) {
             std::cout << "Military has been paid.\n";
             break;
         case 4:
-            kingdom.getEconomy().adjustInflation();
+
+            kingdom.getEconomy().adjustInflation(kingdom.getPopulation());
             std::cout << "Inflation adjusted to " << kingdom.getEconomy().getInflationRate() << "%.\n";
             break;
         case 0:
@@ -390,6 +397,12 @@ void handleLeadershipManagement(Kingdom& kingdom) {
 
             std::cout << "Enter new value (0-100): ";
             std::cin >> value;
+
+            // Validate input range
+            if (value < 0 || value > 100) {
+                std::cout << "Invalid value. Skills must be between 0 and 100.\n";
+                break;
+            }
 
             switch (choice) {
             case 1:

@@ -59,55 +59,81 @@ void Leadership::setPopularity(int popularity) {
 void Leadership::makeDecision(Economy& economy, Military& military) {
     std::cout << "\n" << name << " is making decisions for the kingdom...\n";
 
-    // Economic decision based on economy skill
+    // Economic decisions based on economy skill
     if (economySkill > 70) {
-        // A skilled economic leader may adjust tax rates intelligently
+        // Skilled economic leader makes better decisions
         if (economy.getTreasury() < 500) {
-            economy.setTaxRate(economy.getTaxRate() + 3);
-            std::cout << "Tax rate increased to " << economy.getTaxRate() << "% to address low treasury." << std::endl;
+            int taxIncrease = 2 + (economy.getTaxRate() < 20 ? 1 : 0);
+            economy.setTaxRate(economy.getTaxRate() + taxIncrease);
+            std::cout << "Tax rate increased by " << taxIncrease << "% to " 
+                      << economy.getTaxRate() << "% to address low treasury." << std::endl;
         }
         else if (economy.getTaxRate() > 15 && economy.getTreasury() > 2000) {
-            economy.setTaxRate(economy.getTaxRate() - 2);
-            std::cout << "Tax rate decreased to " << economy.getTaxRate() << "% to improve happiness." << std::endl;
+            int taxDecrease = 2 + (economy.getTaxRate() > 25 ? 1 : 0);
+            economy.setTaxRate(economy.getTaxRate() - taxDecrease);
+            std::cout << "Tax rate decreased by " << taxDecrease << "% to " 
+                      << economy.getTaxRate() << "% to improve happiness." << std::endl;
         }
     }
-    else {
-        // Less skilled economic leaders make less optimal decisions
+    else if (economySkill < 30) {
+        // Poor economic leader makes worse decisions
         if (economy.getTreasury() < 1000) {
-            economy.setTaxRate(economy.getTaxRate() + 5);
-            std::cout << "Tax rate increased to " << economy.getTaxRate() << "% due to treasury concerns." << std::endl;
+            int taxIncrease = 5 + (economy.getTaxRate() < 15 ? 3 : 0);
+            economy.setTaxRate(economy.getTaxRate() + taxIncrease);
+            std::cout << "Tax rate increased by " << taxIncrease << "% to " 
+                      << economy.getTaxRate() << "% due to treasury concerns." << std::endl;
         }
     }
 
-    // Military decision based on military skill
+    // Military decisions based on military skill
     if (militarySkill > 70) {
-        // Skilled military leaders focus on training
+        // Skilled military leader focuses on training and morale
         if (military.getMorale() < 60) {
-            std::cout << "Leader focuses on improving military morale." << std::endl;
-            military.setMorale(military.getMorale() + 10);
+            int moraleBoost = 5 + (military.getMorale() < 40 ? 5 : 0);
+            military.setMorale(military.getMorale() + moraleBoost);
+            std::cout << "Leader focuses on improving military morale by " 
+                      << moraleBoost << " points." << std::endl;
         }
     }
-    else {
-        // Poor military leaders may make suboptimal decisions
+    else if (militarySkill < 30) {
+        // Poor military leader may make suboptimal decisions
         if (military.getTotalForces() < 30) {
-            std::cout << "Leader is concerned about low military forces." << std::endl;
+            std::cout << "Leader is concerned about low military forces but lacks the skill to address it effectively." << std::endl;
+        }
+    }
+
+    // Diplomatic decisions based on diplomacy skill
+    if (diplomacy > 70) {
+        // Skilled diplomat can improve relations and reduce tensions
+        if (popularity < 40) {
+            int popularityBoost = 3 + (popularity < 20 ? 2 : 0);
+            setPopularity(popularity + popularityBoost);
+            std::cout << "Leader's diplomatic efforts increased popularity by " 
+                      << popularityBoost << " points." << std::endl;
         }
     }
 }
 
 void Leadership::handleCoup(const Population& population, const Military& military) {
-    // Calculate coup success chance based on popularity, military morale and strength
+    // More sophisticated coup calculation
     bool coupPossible = popularity < 30 && population.getHappiness() < 40;
+    int coupChance = 0;
 
     if (coupPossible) {
-        // Determine if military supports the coup based on morale
-        bool militarySupport = military.getMorale() < 40;
+        // Calculate coup chance based on multiple factors
+        coupChance += (30 - popularity) / 2;  // Lower popularity = higher chance
+        coupChance += (40 - population.getHappiness()) / 4;  // Lower happiness = higher chance
+        coupChance += military.getMorale() < 40 ? 20 : 0;  // Low morale = higher chance
+        coupChance += military.getTotalForces() > population.getTotalPopulation() / 5 ? 15 : 0;  // Large military = higher chance
 
-        if (militarySupport) {
-            std::cout << "\n*** COUP D'ÉTAT ***\n";
+        // Random element
+        coupChance += rand() % 20;
+
+        if (coupChance > 50) {
+            std::cout << "\n*** COUP D'Ã‰TAT ***\n";
             std::cout << name << " has been overthrown by military forces!" << std::endl;
 
-            // Generate a new leader with random attributes
+            // Generate a new leader with attributes influenced by the coup
             name = "New Ruler";
             diplomacy = 30 + rand() % 50;  // 30-80
             militarySkill = 50 + rand() % 40;  // 50-90 (Military coup leaders tend to have good military skills)
@@ -115,6 +141,9 @@ void Leadership::handleCoup(const Population& population, const Military& milita
             popularity = 50 + rand() % 20;    // 50-70 (Initial honeymoon period)
 
             std::cout << name << " has assumed leadership of the kingdom." << std::endl;
+            std::cout << "New leader's skills: Diplomacy=" << diplomacy 
+                      << ", Military=" << militarySkill 
+                      << ", Economy=" << economySkill << std::endl;
         }
     }
 }
@@ -145,6 +174,10 @@ void Leadership::updatePopularity(const Economy& economy, const Population& popu
     else if (economy.getTreasury() < 500) {
         popularity -= 2;
     }
+
+    // Leader's skills influence popularity
+    popularity += (diplomacy - 50) / 20;  // Diplomatic skill bonus
+    popularity += (economySkill - 50) / 25;  // Economic skill bonus
 
     // Keep popularity in bounds
     if (popularity > 100) popularity = 100;

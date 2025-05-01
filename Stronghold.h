@@ -70,6 +70,7 @@ public:
     void updatePopulation(const Resource& resources, int taxRate);
     void increaseHappiness(int amount);
     void decreaseHappiness(int amount);
+    void updateHappinessFromAction(const std::string& action, int impact);
     bool isRevolting() const;
     void handleRevolt();
 
@@ -96,9 +97,9 @@ public:
     void setTaxRate(int taxRate);
     void setInflationRate(int rate);
 
-    void collectTaxes(const Population& population);
+    bool collectTaxes(Population& population);
     void payMilitary(const Military& military);
-    void adjustInflation();
+    void adjustInflation(Population& population);
     void spendTreasury(int amount);
     void addToTreasury(int amount);
     bool hasSufficientFunds(int amount) const;
@@ -109,6 +110,8 @@ private:
     int treasury;
     int taxRate; // Percentage (0-100)
     int inflationRate; // Percentage (0-100)
+    static int lastTaxCollectionTurn; // Track when taxes were last collected
+    static int currentTurn; // Track current turn number
 };
 
 // Military class to handle army, training, and warfare

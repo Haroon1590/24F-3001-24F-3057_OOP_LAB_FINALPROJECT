@@ -57,11 +57,18 @@ void Kingdom::simulateTurn() {
         population.handleRevolt();
     }
 
-    // 5. Collect taxes
+    // 5. Collect taxes (happiness effects handled in Economy class)
     economy.collectTaxes(population);
 
     // 6. Pay military
     economy.payMilitary(military);
+    // Military payment affects happiness
+    if (economy.hasSufficientFunds(military.getTotalForces() * 3)) {
+        population.updateHappinessFromAction("military_training", 2);
+    }
+    else {
+        population.updateHappinessFromAction("military_training", -3);
+    }
 
     // 7. Calculate loan interest
     banking.calculateInterest();
@@ -75,8 +82,8 @@ void Kingdom::simulateTurn() {
     // 10. Check for coup
     leadership.handleCoup(population, military);
 
-    // 11. Adjust inflation
-    economy.adjustInflation();
+    // 11. Adjust inflation (happiness effects handled in Economy class)
+    economy.adjustInflation(population);
 
     // 12. Generate random event
     eventHandler.generateRandomEvent(*this);
@@ -108,10 +115,13 @@ void Kingdom::gatherResources() {
     int foodConsumed = population.getTotalPopulation() / 2;
     if (resources.consumeFood(foodConsumed)) {
         std::cout << "Population consumed " << foodConsumed << " food." << std::endl;
+        // Food consumption affects happiness
+        population.updateHappinessFromAction("food_distribution", 2);
     }
     else {
         std::cout << "WARNING: Not enough food to feed population!" << std::endl;
-        // Food shortages handled in population update
+        // Food shortage affects happiness negatively
+        population.updateHappinessFromAction("food_distribution", -5);
     }
 }
 
