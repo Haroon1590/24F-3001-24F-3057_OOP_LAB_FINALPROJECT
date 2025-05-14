@@ -4,6 +4,16 @@
 #include <fstream>
 #include <ctime>
 #include <cstdlib>
+#include <sstream>
+using namespace std;
+// Custom exception class for game errors
+class GameException {
+public:
+    GameException(const std::string& msg) : message(msg) {}
+    std::string getMessage() const { return message; }
+private:
+    std::string message;
+};
 
 // Forward declarations
 class Resource;
@@ -14,8 +24,13 @@ class Leadership;
 class Banking;
 class EventHandler;
 class Kingdom;
+class Communication;
+class Alliance;
+class Market;
+class Conflict;
+class Map;
 
-// Resource class to handle different types of resources
+// Resource class
 class Resource {
 public:
     Resource();
@@ -50,7 +65,7 @@ private:
     int iron;
 };
 
-// Population class to handle different social classes and their dynamics
+// Population class
 class Population {
 public:
     Population();
@@ -80,10 +95,10 @@ private:
     int peasants;
     int merchants;
     int nobles;
-    int happiness; // 0-100 scale
+    int happiness;
 };
 
-// Economy class to handle taxes, inflation, and economic management
+// Economy class
 class Economy {
 public:
     Economy();
@@ -108,13 +123,13 @@ public:
 
 private:
     int treasury;
-    int taxRate; // Percentage (0-100)
-    int inflationRate; // Percentage (0-100)
-    static int lastTaxCollectionTurn; // Track when taxes were last collected
-    static int currentTurn; // Track current turn number
+    int taxRate;
+    int inflationRate;
+    static int lastTaxCollectionTurn;
+    static int currentTurn;
 };
 
-// Military class to handle army, training, and warfare
+// Military class
 class Military {
 public:
     Military();
@@ -142,10 +157,10 @@ private:
     int infantry;
     int archers;
     int cavalry;
-    int morale; // 0-100 scale
+    int morale;
 };
 
-// Leadership class to handle rulers and their behaviors
+// Leadership class
 class Leadership {
 public:
     Leadership();
@@ -171,13 +186,13 @@ public:
 
 private:
     std::string name;
-    int diplomacy; // 0-100 scale
-    int militarySkill; // 0-100 scale
-    int economySkill; // 0-100 scale
-    int popularity; // 0-100 scale
+    int diplomacy;
+    int militarySkill;
+    int economySkill;
+    int popularity;
 };
 
-// Banking class to handle loans, interest, and financial operations
+// Banking class
 class Banking {
 public:
     Banking();
@@ -200,11 +215,11 @@ public:
 
 private:
     int loanAmount;
-    int interestRate; // Percentage (0-100)
-    int corruptionLevel; // 0-100 scale
+    int interestRate;
+    int corruptionLevel;
 };
 
-// EventHandler class to manage random events
+// EventHandler class
 class EventHandler {
 public:
     EventHandler();
@@ -216,10 +231,143 @@ public:
     void triggerEconomicEvent(Kingdom& kingdom);
 
 private:
-    int eventProbability; // Chance of event occurring (0-100)
+    int eventProbability;
 };
 
-// Kingdom class to manage all systems together
+// Template class for trade items
+template <typename T>
+class TradeItem {
+public:
+    TradeItem(const std::string& type, T quantity, int goldCost)
+        : itemType(type), quantity(quantity), goldCost(goldCost) {}
+    std::string getItemType() const { return itemType; }
+    T getQuantity() const { return quantity; }
+    int getGoldCost() const { return goldCost; }
+private:
+    std::string itemType;
+    T quantity;
+    int goldCost;
+};
+
+// Communication class for messaging
+class Communication {
+public:
+    Communication();
+    ~Communication();
+    void sendMessage(const Kingdom& sender, const Kingdom& receiver, const std::string& message);
+    void displayMessages(const Kingdom& kingdom) const;
+    void saveChatLog(const std::string& filename) const;
+
+private:
+    struct Message {
+        std::string sender;
+        std::string receiver;
+        std::string content;
+        time_t timestamp;
+        Message(const std::string& s, const std::string& r, const std::string& c)
+            : sender(s), receiver(r), content(c), timestamp(time(0)) {}
+    };
+    Message** messages;
+    int messageCount;
+    int capacity;
+};
+
+// Alliance class for treaties
+class Alliance {
+public:
+    Alliance();
+    ~Alliance();
+    void formAlliance(const Kingdom& k1, const Kingdom& k2, const std::string& treatyName);
+    void breakAlliance(const Kingdom& k1, const Kingdom& k2);
+    bool areAllied(const Kingdom& k1, const Kingdom& k2) const;
+    void saveTreatyLog(const std::string& filename) const;
+
+private:
+    struct Treaty {
+        std::string kingdom1;
+        std::string kingdom2;
+        std::string treatyName;
+        time_t timestamp;
+        Treaty(const std::string& k1, const std::string& k2, const std::string& tn)
+            : kingdom1(k1), kingdom2(k2), treatyName(tn), timestamp(time(0)) {}
+    };
+    Treaty** treaties;
+    int treatyCount;
+    int capacity;
+};
+
+// Market class for trade and smuggling
+class Market {
+public:
+    Market();
+    ~Market();
+    void offerTrade(const Kingdom& seller, const TradeItem<int>& item);
+    void acceptTrade(Kingdom& buyer, Kingdom& seller, int offerIndex);
+    void smuggle(Kingdom& smuggler, Kingdom& receiver, const TradeItem<int>& item);
+    void displayMarket() const;
+    void saveMarketLog(const std::string& filename) const;
+
+private:
+    struct TradeOffer {
+        std::string seller;
+        TradeItem<int> item;
+        TradeOffer(const std::string& s, const TradeItem<int>& i)
+            : seller(s), item(i) {}
+    };
+    TradeOffer** offers;
+    int offerCount;
+    int capacity;
+};
+
+// Conflict class for wars and betrayals
+class Conflict {
+public:
+    Conflict();
+    ~Conflict();
+    void declareWar(const Kingdom& attacker, const Kingdom& defender);
+    void resolveBattle(Kingdom& attacker, Kingdom& defender);
+    void betrayAlly(Kingdom& betrayer, Kingdom& betrayed);
+    void saveConflictLog(const std::string& filename) const;
+
+private:
+    struct War {
+        std::string attacker;
+        std::string defender;
+        time_t timestamp;
+        War(const std::string& a, const std::string& d)
+            : attacker(a), defender(d), timestamp(time(0)) {}
+    };
+    War** wars;
+    int warCount;
+    int capacity;
+};
+
+// Map class for positioning
+class Map {
+public:
+    Map(int width, int height);
+    ~Map();
+    void placeKingdom(const Kingdom& kingdom, int x, int y);
+    void moveKingdom(Kingdom& kingdom, int x, int y);
+    void displayMap() const;
+    int getMapX(const Kingdom& kingdom) const;
+    int getMapY(const Kingdom& kingdom) const;
+
+private:
+    struct Position {
+        std::string kingdomName;
+        int x, y;
+        Position(const std::string& name, int x, int y)
+            : kingdomName(name), x(x), y(y) {}
+    };
+    Position** positions;
+    int positionCount;
+    int capacity;
+    int width;
+    int height;
+};
+
+// Kingdom class
 class Kingdom {
 public:
     Kingdom();
@@ -232,8 +380,11 @@ public:
     Military& getMilitary();
     Leadership& getLeadership();
     Banking& getBanking();
+    int getMapX() const { return mapX; }
+    int getMapY() const { return mapY; }
 
     void setName(const std::string& name);
+    void setMapPosition(int x, int y) { mapX = x; mapY = y; }
 
     void simulateTurn();
     void gatherResources();
@@ -253,4 +404,5 @@ private:
     Banking banking;
     EventHandler eventHandler;
     int turnNumber;
+    int mapX, mapY;
 };

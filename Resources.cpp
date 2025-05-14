@@ -88,10 +88,10 @@ bool Resource::consumeIron(int amount) {
 }
 
 void Resource::displayResources() const {
-    std::cout << "\n===== RESOURCES =====\n";
-    std::cout << "Food: " << food << std::endl;
-    std::cout << "Wood: " << wood << std::endl;
-    std::cout << "Stone: " << stone << std::endl;
-    std::cout << "Iron: " << iron << std::endl;
-    std::cout << "=====================\n";
+    cout << "\n===== RESOURCES =====\n";
+    cout << "Food: " << food << endl;
+    cout << "Wood: " << wood << endl;
+    cout << "Stone: " << stone << endl;
+    cout << "Iron: " << iron << endl;
+    cout << "=====================\n";
 }

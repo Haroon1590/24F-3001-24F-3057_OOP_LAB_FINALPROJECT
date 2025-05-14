@@ -72,14 +72,14 @@ bool Military::recruitSoldiers(Population& population, Resource& resources, int 
     if (resources.getFood() < foodNeeded ||
         resources.getWood() < woodNeeded ||
         resources.getIron() < ironNeeded) {
-        std::cout << "Not enough resources to recruit soldiers." << std::endl;
+        cout << "Not enough resources to recruit soldiers." << endl;
         return false;
     }
 
     // Check if we have enough population to recruit from
     int availablePopulation = population.getPeasants() / 2; // Only half of peasants can be recruited
     if (count > availablePopulation) {
-        std::cout << "Not enough available population to recruit " << count << " soldiers." << std::endl;
+        cout << "Not enough available population to recruit " << count << " soldiers." << endl;
         return false;
     }
 
@@ -108,13 +108,13 @@ bool Military::recruitSoldiers(Population& population, Resource& resources, int 
     morale += count / 5; // Small morale boost for new recruits
     if (morale > 100) morale = 100;
 
-    std::cout << "Successfully recruited " << count << " ";
+    cout << "Successfully recruited " << count << " ";
     switch (type) {
-    case 1: std::cout << "infantry"; break;
-    case 2: std::cout << "archers"; break;
-    case 3: std::cout << "cavalry"; break;
+    case 1: cout << "infantry"; break;
+    case 2: cout << "archers"; break;
+    case 3: cout << "cavalry"; break;
     }
-    std::cout << " soldiers." << std::endl;
+    cout << " soldiers." << endl;
 
     return true;
 }
@@ -122,7 +122,7 @@ bool Military::recruitSoldiers(Population& population, Resource& resources, int 
 void Military::trainTroops(Resource& resources) {
     int totalForces = getTotalForces();
     if (totalForces == 0) {
-        std::cout << "No troops to train." << std::endl;
+        cout << "No troops to train." << endl;
         return;
     }
 
@@ -143,12 +143,12 @@ void Military::trainTroops(Resource& resources) {
         morale += 5 + moraleBonus;
         if (morale > 100) morale = 100;
 
-        std::cout << "Troops trained successfully. Morale increased to " << morale << "." << std::endl;
-        std::cout << "Resources consumed: " << foodNeeded << " food, "
-                  << woodNeeded << " wood, " << ironNeeded << " iron." << std::endl;
+        cout << "Troops trained successfully. Morale increased to " << morale << "." << endl;
+        cout << "Resources consumed: " << foodNeeded << " food, "
+                  << woodNeeded << " wood, " << ironNeeded << " iron." << endl;
     }
     else {
-        std::cout << "Not enough resources to train troops." << std::endl;
+        cout << "Not enough resources to train troops." << endl;
     }
 }
 
@@ -168,19 +168,19 @@ void Military::updateMorale(const Economy& economy, const Population& population
     if (morale < 0) morale = 0;
 
     if (morale != previousMorale) {
-        std::cout << "Military morale " << (morale > previousMorale ? "increased" : "decreased")
-            << " to " << morale << "." << std::endl;
+        cout << "Military morale " << (morale > previousMorale ? "increased" : "decreased")
+            << " to " << morale << "." << endl;
         if (happinessFactor != 0) {
-            std::cout << "Population happiness " << (happinessFactor > 0 ? "boosted" : "reduced")
-                << " morale by " << abs(happinessFactor) << "." << std::endl;
+            cout << "Population happiness " << (happinessFactor > 0 ? "boosted" : "reduced")
+                << " morale by " << abs(happinessFactor) << "." << endl;
         }
         if (treasuryFactor != 0) {
-            std::cout << "Treasury status " << (treasuryFactor > 0 ? "boosted" : "reduced")
-                << " morale by " << abs(treasuryFactor) << "." << std::endl;
+            cout << "Treasury status " << (treasuryFactor > 0 ? "boosted" : "reduced")
+                << " morale by " << abs(treasuryFactor) << "." << endl;
         }
         if (populationFactor != 0) {
-            std::cout << "Military size relative to population " << (populationFactor > 0 ? "boosted" : "reduced")
-                << " morale by " << abs(populationFactor) << "." << std::endl;
+            cout << "Military size relative to population " << (populationFactor > 0 ? "boosted" : "reduced")
+                << " morale by " << abs(populationFactor) << "." << endl;
         }
     }
 }
@@ -200,12 +200,12 @@ int Military::calculateMilitaryStrength() const {
 }
 
 void Military::displayMilitary() const {
-    std::cout << "\n===== MILITARY =====\n";
-    std::cout << "Infantry: " << infantry << std::endl;
-    std::cout << "Archers: " << archers << std::endl;
-    std::cout << "Cavalry: " << cavalry << std::endl;
-    std::cout << "Total Forces: " << getTotalForces() << std::endl;
-    std::cout << "Military Strength: " << calculateMilitaryStrength() << std::endl;
-    std::cout << "Morale: " << morale << "/100" << std::endl;
-    std::cout << "===================\n";
+    cout << "\n===== MILITARY =====\n";
+    cout << "Infantry: " << infantry << endl;
+    cout << "Archers: " << archers << endl;
+    cout << "Cavalry: " << cavalry << endl;
+    cout << "Total Forces: " << getTotalForces() << endl;
+    cout << "Military Strength: " << calculateMilitaryStrength() << endl;
+    cout << "Morale: " << morale << "/100" << endl;
+    cout << "===================\n";
 }

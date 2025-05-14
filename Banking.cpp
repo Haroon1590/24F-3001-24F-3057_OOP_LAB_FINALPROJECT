@@ -38,14 +38,14 @@ void Banking::setCorruptionLevel(int level) {
 
 void Banking::takeLoan(Economy& economy, int amount) {
     if (amount <= 0) {
-        std::cout << "Loan amount must be positive." << std::endl;
+        cout << "Loan amount must be positive." << endl;
         return;
     }
 
     // Maximum loan limited by current treasury
     int maxLoan = economy.getTreasury() * 2;
     if (amount > maxLoan) {
-        std::cout << "Maximum loan available is " << maxLoan << " gold." << std::endl;
+        cout << "Maximum loan available is " << maxLoan << " gold." << endl;
         amount = maxLoan;
     }
 
@@ -61,12 +61,12 @@ void Banking::takeLoan(Economy& economy, int amount) {
     // Add the loan to treasury
     economy.addToTreasury(amount);
 
-    std::cout << "Took a loan of " << amount << " gold at " << interestRate << "% interest rate." << std::endl;
+    cout << "Took a loan of " << amount << " gold at " << interestRate << "% interest rate." << endl;
 }
 
 void Banking::repayLoan(Economy& economy, int amount) {
     if (loanAmount == 0) {
-        std::cout << "No loans to repay." << std::endl;
+        cout << "No loans to repay." << endl;
         return;
     }
 
@@ -75,7 +75,7 @@ void Banking::repayLoan(Economy& economy, int amount) {
     }
 
     if (!economy.hasSufficientFunds(amount)) {
-        std::cout << "Insufficient funds to repay loan." << std::endl;
+        cout << "Insufficient funds to repay loan." << endl;
         return;
     }
 
@@ -91,7 +91,7 @@ void Banking::repayLoan(Economy& economy, int amount) {
         if (interestRate < 10) interestRate = 10;
     }
 
-    std::cout << "Repaid " << amount << " gold of loan. Remaining loan: " << loanAmount << " gold." << std::endl;
+    cout << "Repaid " << amount << " gold of loan. Remaining loan: " << loanAmount << " gold." << endl;
 }
 
 void Banking::calculateInterest() {
@@ -99,12 +99,12 @@ void Banking::calculateInterest() {
         int interestAmount = (loanAmount * interestRate) / 100;
         loanAmount += interestAmount;
 
-        std::cout << "Interest of " << interestAmount << " gold added to loan. New loan amount: " << loanAmount << " gold." << std::endl;
+        cout << "Interest of " << interestAmount << " gold added to loan. New loan amount: " << loanAmount << " gold." << endl;
     }
 }
 
 void Banking::conductAudit(Economy& economy) {
-    std::cout << "\nConducting financial audit..." << std::endl;
+    cout << "\nConducting financial audit..." << endl;
 
     // Chance to discover corruption based on corruption level
     int discoveryChance = corruptionLevel * 2;
@@ -114,13 +114,13 @@ void Banking::conductAudit(Economy& economy) {
         // Corruption discovered
         int stolenAmount = (economy.getTreasury() * corruptionLevel) / 200; // Up to half the corruption percentage
 
-        std::cout << "Corruption discovered! " << stolenAmount << " gold has been embezzled." << std::endl;
+        cout << "Corruption discovered! " << stolenAmount << " gold has been embezzled." << endl;
 
         // Recover some of the stolen funds
         int recoveredAmount = stolenAmount / 2;
         economy.addToTreasury(recoveredAmount);
 
-        std::cout << "Recovered " << recoveredAmount << " gold from corrupt officials." << std::endl;
+        cout << "Recovered " << recoveredAmount << " gold from corrupt officials." << endl;
 
         // Reduce corruption level as corrupt officials have been caught
         corruptionLevel -= rand() % 5 + 1;
@@ -128,7 +128,7 @@ void Banking::conductAudit(Economy& economy) {
     }
     else {
         // No corruption discovered (even if there is some)
-        std::cout << "Audit completed. No significant issues found." << std::endl;
+        cout << "Audit completed. No significant issues found." << endl;
 
         // Small chance corruption increases if not detected
         if (roll > 80) {
@@ -139,9 +139,9 @@ void Banking::conductAudit(Economy& economy) {
 }
 
 void Banking::displayBanking() const {
-    std::cout << "\n===== BANKING =====\n";
-    std::cout << "Current Loans: " << loanAmount << " gold" << std::endl;
-    std::cout << "Interest Rate: " << interestRate << "%" << std::endl;
-    std::cout << "Corruption Level: " << corruptionLevel << "/100" << std::endl;
-    std::cout << "=================\n";
+    cout << "\n===== BANKING =====\n";
+    cout << "Current Loans: " << loanAmount << " gold" << endl;
+    cout << "Interest Rate: " << interestRate << "%" << endl;
+    cout << "Corruption Level: " << corruptionLevel << "/100" << endl;
+    cout << "=================\n";
 }

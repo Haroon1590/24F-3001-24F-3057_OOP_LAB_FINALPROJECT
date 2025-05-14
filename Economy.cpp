@@ -44,9 +44,9 @@ bool Economy::collectTaxes(Population& population) {
 
     // Can only collect taxes every 4 turns
     if (currentTurn - lastTaxCollectionTurn < 4) {
-        std::cout << "Cannot collect taxes yet. Must wait " 
+        cout << "Cannot collect taxes yet. Must wait " 
                   << (4 - (currentTurn - lastTaxCollectionTurn)) 
-                  << " more turns." << std::endl;
+                  << " more turns." << endl;
         return false;
     }
 
@@ -82,15 +82,15 @@ bool Economy::collectTaxes(Population& population) {
     population.updateHappinessFromAction("tax_collection", happinessImpact);
 
     // Detailed tax collection report
-    std::cout << "\n=== Tax Collection Report ===\n";
-    std::cout << "Taxes collected from:\n";
-    std::cout << "  - Peasants: " << peasantTaxes << " gold (Rate: " << (peasantRate * 100 - 100) << "% extra)\n";
-    std::cout << "  - Merchants: " << merchantTaxes << " gold (Rate: " << (merchantRate * 100 - 100) << "% extra)\n";
-    std::cout << "  - Nobles: " << nobleTaxes << " gold (Rate: " << (nobleRate * 100 - 100) << "% extra)\n";
-    std::cout << "Inflation adjustment: " << ((inflationMultiplier - 1.0) * 100) << "%\n";
-    std::cout << "Total collected: " << totalTaxes << " gold\n";
-    std::cout << "Happiness impact: " << happinessImpact << " points\n";
-    std::cout << "=========================\n";
+    cout << "\n=== Tax Collection Report ===\n";
+    cout << "Taxes collected from:\n";
+    cout << "  - Peasants: " << peasantTaxes << " gold (Rate: " << (peasantRate * 100 - 100) << "% extra)\n";
+    cout << "  - Merchants: " << merchantTaxes << " gold (Rate: " << (merchantRate * 100 - 100) << "% extra)\n";
+    cout << "  - Nobles: " << nobleTaxes << " gold (Rate: " << (nobleRate * 100 - 100) << "% extra)\n";
+    cout << "Inflation adjustment: " << ((inflationMultiplier - 1.0) * 100) << "%\n";
+    cout << "Total collected: " << totalTaxes << " gold\n";
+    cout << "Happiness impact: " << happinessImpact << " points\n";
+    cout << "=========================\n";
     
     return true;
 }
@@ -105,17 +105,17 @@ void Economy::payMilitary(const Military& military) {
 
     if (hasSufficientFunds(totalMilitaryCost)) {
         spendTreasury(totalMilitaryCost);
-        std::cout << "Paid " << totalMilitaryCost << " gold to military forces." << std::endl;
-        std::cout << "Breakdown: " << infantryCost << " for infantry, "
+        cout << "Paid " << totalMilitaryCost << " gold to military forces." << endl;
+        cout << "Breakdown: " << infantryCost << " for infantry, "
                   << archerCost << " for archers, "
-                  << cavalryCost << " for cavalry." << std::endl;
+                  << cavalryCost << " for cavalry." << endl;
     }
     else {
         // Partial payment if insufficient funds
         int partialPayment = treasury;
         spendTreasury(partialPayment);
-        std::cout << "WARNING: Insufficient funds to pay military! Only paid " 
-                  << partialPayment << " gold out of " << totalMilitaryCost << " required." << std::endl;
+        cout << "WARNING: Insufficient funds to pay military! Only paid " 
+                  << partialPayment << " gold out of " << totalMilitaryCost << " required." << endl;
     }
 }
 
@@ -177,22 +177,22 @@ void Economy::adjustInflation(Population& population) {
     if (inflationRate != previousInflation) {
         int happinessImpact = (previousInflation - inflationRate) / 2;  // Positive when inflation decreases
         
-        std::cout << "\n=== Economic Report ===\n";
-        std::cout << "Inflation " << (inflationRate > previousInflation ? "increased" : "decreased");
-        std::cout << " from " << previousInflation << "% to " << inflationRate << "%\n";
+        cout << "\n=== Economic Report ===\n";
+        cout << "Inflation " << (inflationRate > previousInflation ? "increased" : "decreased");
+        cout << " from " << previousInflation << "% to " << inflationRate << "%\n";
         
-        std::cout << "Economic Factors:\n";
-        if (treasury > 10000) std::cout << "- High treasury reserves (Inflationary)\n";
-        if (treasury < 1000) std::cout << "- Low treasury reserves (Deflationary)\n";
-        if (taxRate > 30) std::cout << "- High tax rate (Initially Deflationary)\n";
-        if (taxRate < 10) std::cout << "- Low tax rate (Potentially Inflationary)\n";
-        if (totalPop > 1000) std::cout << "- Large population (Inflationary)\n";
-        if (merchantRatio > 0.2) std::cout << "- High merchant activity (Inflationary)\n";
-        if (currentTurn - lastTaxCollectionTurn <= 1) std::cout << "- Frequent tax collection (Market Instability)\n";
+        cout << "Economic Factors:\n";
+        if (treasury > 10000) cout << "- High treasury reserves (Inflationary)\n";
+        if (treasury < 1000) cout << "- Low treasury reserves (Deflationary)\n";
+        if (taxRate > 30) cout << "- High tax rate (Initially Deflationary)\n";
+        if (taxRate < 10) cout << "- Low tax rate (Potentially Inflationary)\n";
+        if (totalPop > 1000) cout << "- Large population (Inflationary)\n";
+        if (merchantRatio > 0.2) cout << "- High merchant activity (Inflationary)\n";
+        if (currentTurn - lastTaxCollectionTurn <= 1) cout << "- Frequent tax collection (Market Instability)\n";
         
         population.updateHappinessFromAction("inflation", happinessImpact);
-        std::cout << "Population happiness impact: " << happinessImpact << " points\n";
-        std::cout << "=====================\n";
+        cout << "Population happiness impact: " << happinessImpact << " points\n";
+        cout << "=====================\n";
     }
 }
 
@@ -214,9 +214,9 @@ bool Economy::hasSufficientFunds(int amount) const {
 }
 
 void Economy::displayEconomy() const {
-    std::cout << "\n===== ECONOMY =====\n";
-    std::cout << "Treasury: " << treasury << " gold" << std::endl;
-    std::cout << "Tax Rate: " << taxRate << "%" << std::endl;
-    std::cout << "Inflation Rate: " << inflationRate << "%" << std::endl;
-    std::cout << "==================\n";
+    cout << "\n===== ECONOMY =====\n";
+    cout << "Treasury: " << treasury << " gold" << endl;
+    cout << "Tax Rate: " << taxRate << "%" << endl;
+    cout << "Inflation Rate: " << inflationRate << "%" << endl;
+    cout << "==================\n";
 }

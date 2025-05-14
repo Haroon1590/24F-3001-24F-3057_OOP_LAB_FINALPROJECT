@@ -82,15 +82,15 @@ void Population::updatePopulation(const Resource& resources, int taxRate) {
         merchants += merchantGrowth;
         nobles += nobleGrowth;
 
-        std::cout << "\n=== Population Growth Report ===\n";
-        std::cout << "Growth factors:\n";
-        std::cout << "- Food availability: " << (foodModifier * 100 - 100) << "% bonus\n";
-        std::cout << "- Happiness: " << (happinessModifier * 100 - 100) << "% bonus\n";
-        std::cout << "- Tax rate: " << (taxModifier * 100 - 100) << "% bonus\n";
-        std::cout << "Population changes:\n";
-        std::cout << "- Peasants: +" << peasantGrowth << "\n";
-        std::cout << "- Merchants: +" << merchantGrowth << "\n";
-        std::cout << "- Nobles: +" << nobleGrowth << "\n";
+        cout << "\n=== Population Growth Report ===\n";
+        cout << "Growth factors:\n";
+        cout << "- Food availability: " << (foodModifier * 100 - 100) << "% bonus\n";
+        cout << "- Happiness: " << (happinessModifier * 100 - 100) << "% bonus\n";
+        cout << "- Tax rate: " << (taxModifier * 100 - 100) << "% bonus\n";
+        cout << "Population changes:\n";
+        cout << "- Peasants: +" << peasantGrowth << "\n";
+        cout << "- Merchants: +" << merchantGrowth << "\n";
+        cout << "- Nobles: +" << nobleGrowth << "\n";
 
         // Social mobility: Small chance for peasants to become merchants and merchants to become nobles
         if (happiness >= 60 && foodPerPerson >= 1.5) {
@@ -102,12 +102,12 @@ void Population::updatePopulation(const Resource& resources, int taxRate) {
             merchants -= merchantPromotion;
             nobles += merchantPromotion;
 
-            std::cout << "Social mobility occurred!\n";
-            std::cout << "- " << peasantPromotion << " peasants became merchants\n";
-            std::cout << "- " << merchantPromotion << " merchants became nobles\n";
+            cout << "Social mobility occurred!\n";
+            cout << "- " << peasantPromotion << " peasants became merchants\n";
+            cout << "- " << merchantPromotion << " merchants became nobles\n";
         }
 
-        std::cout << "============================\n";
+        cout << "============================\n";
     }
     else {
         // Population decline
@@ -122,15 +122,15 @@ void Population::updatePopulation(const Resource& resources, int taxRate) {
         merchants -= merchantDecline;
         nobles -= nobleDecline;
 
-        std::cout << "\n=== Population Decline Report ===\n";
-        std::cout << "Decline factors:\n";
-        std::cout << "- Food shortage: " << (foodPerPerson < 1.0 ? "Yes" : "No") << "\n";
-        std::cout << "- Low happiness: " << (happiness < 20 ? "Yes" : "No") << "\n";
-        std::cout << "Population losses:\n";
-        std::cout << "- Peasants: -" << peasantDecline << "\n";
-        std::cout << "- Merchants: -" << merchantDecline << "\n";
-        std::cout << "- Nobles: -" << nobleDecline << "\n";
-        std::cout << "============================\n";
+        cout << "\n=== Population Decline Report ===\n";
+        cout << "Decline factors:\n";
+        cout << "- Food shortage: " << (foodPerPerson < 1.0 ? "Yes" : "No") << "\n";
+        cout << "- Low happiness: " << (happiness < 20 ? "Yes" : "No") << "\n";
+        cout << "Population losses:\n";
+        cout << "- Peasants: -" << peasantDecline << "\n";
+        cout << "- Merchants: -" << merchantDecline << "\n";
+        cout << "- Nobles: -" << nobleDecline << "\n";
+        cout << "============================\n";
     }
 
     // Ensure no negative population
@@ -157,7 +157,7 @@ void Population::decreaseHappiness(int amount) {
 }
 
 // New method to handle happiness changes from kingdom actions
-void Population::updateHappinessFromAction(const std::string& action, int impact) {
+void Population::updateHappinessFromAction(const string& action, int impact) {
     int previousHappiness = happiness;
     
     // Base happiness change
@@ -199,16 +199,16 @@ void Population::updateHappinessFromAction(const std::string& action, int impact
 
     // Report significant changes
     if (happiness != previousHappiness) {
-        std::cout << "\n=== Happiness Update ===\n";
-        std::cout << "Action: " << action << "\n";
-        std::cout << "Base impact: " << impact << "\n";
-        std::cout << "Class-specific reactions:\n";
-        std::cout << "- Peasants (" << (peasantRatio * 100) << "% of population)\n";
-        std::cout << "- Merchants (" << (merchantRatio * 100) << "% of population)\n";
-        std::cout << "- Nobles (" << (nobleRatio * 100) << "% of population)\n";
-        std::cout << "Total happiness change: " << (happiness - previousHappiness) << "\n";
-        std::cout << "New happiness level: " << happiness << "/100\n";
-        std::cout << "=====================\n";
+        cout << "\n=== Happiness Update ===\n";
+        cout << "Action: " << action << "\n";
+        cout << "Base impact: " << impact << "\n";
+        cout << "Class-specific reactions:\n";
+        cout << "- Peasants (" << (peasantRatio * 100) << "% of population)\n";
+        cout << "- Merchants (" << (merchantRatio * 100) << "% of population)\n";
+        cout << "- Nobles (" << (nobleRatio * 100) << "% of population)\n";
+        cout << "Total happiness change: " << (happiness - previousHappiness) << "\n";
+        cout << "New happiness level: " << happiness << "/100\n";
+        cout << "=====================\n";
     }
 }
 
@@ -217,8 +217,8 @@ bool Population::isRevolting() const {
 }
 
 void Population::handleRevolt() {
-    std::cout << "\n*** REVOLT IN THE KINGDOM! ***\n";
-    std::cout << "The population is unhappy and revolting!\n";
+    cout << "\n*** REVOLT IN THE KINGDOM! ***\n";
+    cout << "The population is unhappy and revolting!\n";
 
     // Consequences of revolt
     peasants -= static_cast<int>(peasants * 0.1);
@@ -229,27 +229,27 @@ void Population::handleRevolt() {
     happiness = 25;
 
     // Display revolt consequences
-    std::cout << "Population losses: " << static_cast<int>(peasants * 0.1) << " peasants, "
+    cout << "Population losses: " << static_cast<int>(peasants * 0.1) << " peasants, "
               << static_cast<int>(merchants * 0.15) << " merchants, "
-              << static_cast<int>(nobles * 0.05) << " nobles." << std::endl;
+              << static_cast<int>(nobles * 0.05) << " nobles." << endl;
 }
 
 void Population::displayPopulation() const {
-    std::cout << "\n===== POPULATION =====\n";
-    std::cout << "Peasants: " << peasants << std::endl;
-    std::cout << "Merchants: " << merchants << std::endl;
-    std::cout << "Nobles: " << nobles << std::endl;
-    std::cout << "Total Population: " << getTotalPopulation() << std::endl;
-    std::cout << "Happiness Level: " << happiness << "/100" << std::endl;
+    cout << "\n===== POPULATION =====\n";
+    cout << "Peasants: " << peasants << endl;
+    cout << "Merchants: " << merchants << endl;
+    cout << "Nobles: " << nobles << endl;
+    cout << "Total Population: " << getTotalPopulation() << endl;
+    cout << "Happiness Level: " << happiness << "/100" << endl;
 
     // Display happiness status
-    std::cout << "Happiness Status: ";
-    if (happiness > 80) std::cout << "Very Happy";
-    else if (happiness > 60) std::cout << "Content";
-    else if (happiness > 40) std::cout << "Neutral";
-    else if (happiness > 20) std::cout << "Unhappy";
-    else std::cout << "On the Verge of Revolt!";
-    std::cout << std::endl;
+    cout << "Happiness Status: ";
+    if (happiness > 80) cout << "Very Happy";
+    else if (happiness > 60) cout << "Content";
+    else if (happiness > 40) cout << "Neutral";
+    else if (happiness > 20) cout << "Unhappy";
+    else cout << "On the Verge of Revolt!";
+    cout << endl;
 
-    std::cout << "=====================\n";
+    cout << "=====================\n";
 }

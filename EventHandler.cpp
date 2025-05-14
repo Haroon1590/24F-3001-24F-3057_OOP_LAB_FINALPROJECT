@@ -31,8 +31,8 @@ void EventHandler::generateRandomEvent(Kingdom& kingdom) {
 }
 
 void EventHandler::triggerFamine(Kingdom& kingdom) {
-    std::cout << "\n*** FAMINE EVENT ***\n";
-    std::cout << "A famine has struck the kingdom!" << std::endl;
+    cout << "\n*** FAMINE EVENT ***\n";
+    cout << "A famine has struck the kingdom!" << endl;
 
     // Reduce food by 30-50%
     int foodReduction = 30 + rand() % 21;
@@ -41,40 +41,40 @@ void EventHandler::triggerFamine(Kingdom& kingdom) {
 
     if (reducedAmount > 0) {
         kingdom.getResources().setFood(currentFood - reducedAmount);
-        std::cout << "Food stocks reduced by " << reducedAmount << " units." << std::endl;
+        cout << "Food stocks reduced by " << reducedAmount << " units." << endl;
     }
 
     // Population effects
     kingdom.getPopulation().decreaseHappiness(15);
 
     // Offer player choice: Distribute reserves or not
-    std::cout << "\nHow will you respond?\n";
-    std::cout << "1. Distribute emergency food reserves (costs gold)\n";
-    std::cout << "2. Let the people fend for themselves\n";
+    cout << "\nHow will you respond?\n";
+    cout << "1. Distribute emergency food reserves (costs gold)\n";
+    cout << "2. Let the people fend for themselves\n";
 
     int choice;
-    std::cin >> choice;
+    cin >> choice;
 
     if (choice == 1) {
         int cost = kingdom.getPopulation().getTotalPopulation() * 2;
         if (kingdom.getEconomy().hasSufficientFunds(cost)) {
             kingdom.getEconomy().spendTreasury(cost);
             kingdom.getPopulation().increaseHappiness(10);
-            std::cout << "You spent " << cost << " gold on emergency food. Population happiness improved." << std::endl;
+            cout << "You spent " << cost << " gold on emergency food. Population happiness improved." << endl;
         }
         else {
-            std::cout << "Not enough gold to distribute emergency food!" << std::endl;
+            cout << "Not enough gold to distribute emergency food!" << endl;
         }
     }
     else {
         kingdom.getPopulation().decreaseHappiness(10);
-        std::cout << "The people struggle through the famine without aid. Happiness decreases further." << std::endl;
+        cout << "The people struggle through the famine without aid. Happiness decreases further." << endl;
     }
 }
 
 void EventHandler::triggerDisease(Kingdom& kingdom) {
-    std::cout << "\n*** DISEASE OUTBREAK ***\n";
-    std::cout << "A disease is spreading through the kingdom!" << std::endl;
+    cout << "\n*** DISEASE OUTBREAK ***\n";
+    cout << "A disease is spreading through the kingdom!" << endl;
 
     // Calculate population loss (3-8% of total)
     Population& population = kingdom.getPopulation();
@@ -94,26 +94,26 @@ void EventHandler::triggerDisease(Kingdom& kingdom) {
     // Happiness decrease
     population.decreaseHappiness(12);
 
-    std::cout << "The disease claimed " << populationLoss << " lives." << std::endl;
+    cout << "The disease claimed " << populationLoss << " lives." << endl;
 
     // Offer player choice: Medical response
-    std::cout << "\nHow will you respond?\n";
-    std::cout << "1. Fund medical treatment (costs gold)\n";
-    std::cout << "2. Quarantine affected areas (costs less gold but higher population loss)\n";
-    std::cout << "3. Take no action\n";
+    cout << "\nHow will you respond?\n";
+    cout << "1. Fund medical treatment (costs gold)\n";
+    cout << "2. Quarantine affected areas (costs less gold but higher population loss)\n";
+    cout << "3. Take no action\n";
 
     int choice;
-    std::cin >> choice;
+    cin >> choice;
 
     if (choice == 1) {
         int cost = totalPop;
         if (kingdom.getEconomy().hasSufficientFunds(cost)) {
             kingdom.getEconomy().spendTreasury(cost);
             population.increaseHappiness(8);
-            std::cout << "You spent " << cost << " gold on medical treatment. The disease is contained." << std::endl;
+            cout << "You spent " << cost << " gold on medical treatment. The disease is contained." << endl;
         }
         else {
-            std::cout << "Not enough gold for medical treatment!" << std::endl;
+            cout << "Not enough gold for medical treatment!" << endl;
         }
     }
     else if (choice == 2) {
@@ -125,11 +125,11 @@ void EventHandler::triggerDisease(Kingdom& kingdom) {
             int additionalLoss = peasantLoss / 2;
             population.setPeasants(population.getPeasants() - additionalLoss);
 
-            std::cout << "You spent " << cost << " gold on quarantine measures. ";
-            std::cout << "The disease is contained but " << additionalLoss << " additional peasants died." << std::endl;
+            cout << "You spent " << cost << " gold on quarantine measures. ";
+            cout << "The disease is contained but " << additionalLoss << " additional peasants died." << endl;
         }
         else {
-            std::cout << "Not enough gold for quarantine measures!" << std::endl;
+            cout << "Not enough gold for quarantine measures!" << endl;
         }
     }
     else {
@@ -145,12 +145,12 @@ void EventHandler::triggerDisease(Kingdom& kingdom) {
 
         population.decreaseHappiness(15);
 
-        std::cout << "The disease continues to spread, claiming " << additionalLoss << " additional lives." << std::endl;
+        cout << "The disease continues to spread, claiming " << additionalLoss << " additional lives." << endl;
     }
 }
 
 void EventHandler::triggerWeatherEvent(Kingdom& kingdom) {
-    std::cout << "\n*** SEVERE WEATHER EVENT ***\n";
+    cout << "\n*** SEVERE WEATHER EVENT ***\n";
 
     // Determine weather type
     int weatherType = rand() % 3;
@@ -158,7 +158,7 @@ void EventHandler::triggerWeatherEvent(Kingdom& kingdom) {
 
     switch (weatherType) {
     case 0: {
-        std::cout << "Heavy storms have damaged buildings and crops!" << std::endl;
+        cout << "Heavy storms have damaged buildings and crops!" << endl;
 
         // Reduce food and wood
         int foodLoss = (resources.getFood() * (10 + rand() % 21)) / 100;  // 10-30%
@@ -167,15 +167,15 @@ void EventHandler::triggerWeatherEvent(Kingdom& kingdom) {
         resources.setFood(resources.getFood() - foodLoss);
         resources.setWood(resources.getWood() - woodLoss);
 
-        std::cout << "Lost " << foodLoss << " food and " << woodLoss << " wood." << std::endl;
+        cout << "Lost " << foodLoss << " food and " << woodLoss << " wood." << endl;
 
         // Repair options
-        std::cout << "\nWill you allocate resources for repairs?\n";
-        std::cout << "1. Yes (costs wood and gold)\n";
-        std::cout << "2. No\n";
+        cout << "\nWill you allocate resources for repairs?\n";
+        cout << "1. Yes (costs wood and gold)\n";
+        cout << "2. No\n";
 
         int choice;
-        std::cin >> choice;
+        cin >> choice;
 
         if (choice == 1) {
             int woodNeeded = woodLoss / 2;
@@ -188,37 +188,37 @@ void EventHandler::triggerWeatherEvent(Kingdom& kingdom) {
                 kingdom.getEconomy().spendTreasury(goldNeeded);
                 kingdom.getPopulation().increaseHappiness(5);
 
-                std::cout << "Repairs completed using " << woodNeeded << " wood and "
-                    << goldNeeded << " gold. Population is grateful." << std::endl;
+                cout << "Repairs completed using " << woodNeeded << " wood and "
+                    << goldNeeded << " gold. Population is grateful." << endl;
             }
             else {
-                std::cout << "Not enough resources for repairs!" << std::endl;
+                cout << "Not enough resources for repairs!" << endl;
                 kingdom.getPopulation().decreaseHappiness(5);
             }
         }
         else {
             kingdom.getPopulation().decreaseHappiness(10);
-            std::cout << "The people must fend for themselves. Happiness decreases." << std::endl;
+            cout << "The people must fend for themselves. Happiness decreases." << endl;
         }
         break;
     }
     case 1: {
-        std::cout << "Drought has affected the kingdom's food production!" << std::endl;
+        cout << "Drought has affected the kingdom's food production!" << endl;
 
         // Severe food reduction
         int foodLoss = (resources.getFood() * (30 + rand() % 21)) / 100;  // 30-50%
         resources.setFood(resources.getFood() - foodLoss);
 
-        std::cout << "Food production decreased by " << foodLoss << " units." << std::endl;
+        cout << "Food production decreased by " << foodLoss << " units." << endl;
         kingdom.getPopulation().decreaseHappiness(8);
 
         // Option to import food
-        std::cout << "\nWill you import food from neighboring regions?\n";
-        std::cout << "1. Yes (costs gold)\n";
-        std::cout << "2. No\n";
+        cout << "\nWill you import food from neighboring regions?\n";
+        cout << "1. Yes (costs gold)\n";
+        cout << "2. No\n";
 
         int choice;
-        std::cin >> choice;
+        cin >> choice;
 
         if (choice == 1) {
             int goldNeeded = foodLoss * 2;
@@ -227,20 +227,20 @@ void EventHandler::triggerWeatherEvent(Kingdom& kingdom) {
                 resources.addFood(foodLoss);
                 kingdom.getPopulation().increaseHappiness(3);
 
-                std::cout << "Imported " << foodLoss << " food for " << goldNeeded << " gold." << std::endl;
+                cout << "Imported " << foodLoss << " food for " << goldNeeded << " gold." << endl;
             }
             else {
-                std::cout << "Not enough gold to import food!" << std::endl;
+                cout << "Not enough gold to import food!" << endl;
             }
         }
         else {
             kingdom.getPopulation().decreaseHappiness(7);
-            std::cout << "The people will have to get by with less food. Happiness decreases." << std::endl;
+            cout << "The people will have to get by with less food. Happiness decreases." << endl;
         }
         break;
     }
     case 2: {
-        std::cout << "Floods have damaged the kingdom's infrastructure!" << std::endl;
+        cout << "Floods have damaged the kingdom's infrastructure!" << endl;
 
         // Damage to buildings (represented by stone and wood loss)
         int stoneLoss = (resources.getStone() * (10 + rand() % 11)) / 100;  // 10-20%
@@ -258,8 +258,8 @@ void EventHandler::triggerWeatherEvent(Kingdom& kingdom) {
             kingdom.getEconomy().setTreasury(0);
         }
 
-        std::cout << "Lost " << stoneLoss << " stone, " << woodLoss << " wood, and up to "
-            << goldLoss << " gold in economic damage." << std::endl;
+        cout << "Lost " << stoneLoss << " stone, " << woodLoss << " wood, and up to "
+            << goldLoss << " gold in economic damage." << endl;
 
         kingdom.getPopulation().decreaseHappiness(12);
         break;
@@ -268,14 +268,14 @@ void EventHandler::triggerWeatherEvent(Kingdom& kingdom) {
 }
 
 void EventHandler::triggerEconomicEvent(Kingdom& kingdom) {
-    std::cout << "\n*** ECONOMIC EVENT ***\n";
+    cout << "\n*** ECONOMIC EVENT ***\n";
 
     int eventType = rand() % 3;
     Economy& economy = kingdom.getEconomy();
 
     switch (eventType) {
     case 0: {
-        std::cout << "Market boom! Merchants are thriving." << std::endl;
+        cout << "Market boom! Merchants are thriving." << endl;
 
         // Economic benefits
         int goldGain = kingdom.getPopulation().getMerchants() * (5 + rand() % 6);  // 5-10 gold per merchant
@@ -284,14 +284,14 @@ void EventHandler::triggerEconomicEvent(Kingdom& kingdom) {
         // Slight inflation increase
         economy.setInflationRate(economy.getInflationRate() + 2);
 
-        std::cout << "Kingdom gained " << goldGain << " gold from increased trade." << std::endl;
-        std::cout << "Inflation rate increased to " << economy.getInflationRate() << "%." << std::endl;
+        cout << "Kingdom gained " << goldGain << " gold from increased trade." << endl;
+        cout << "Inflation rate increased to " << economy.getInflationRate() << "%." << endl;
 
         kingdom.getPopulation().increaseHappiness(5);
         break;
     }
     case 1: {
-        std::cout << "Economic recession! Trade has slowed down." << std::endl;
+        cout << "Economic recession! Trade has slowed down." << endl;
 
         // Treasury reduction
         int treasuryReduction = (economy.getTreasury() * (10 + rand() % 11)) / 100;  // 10-20%
@@ -300,47 +300,47 @@ void EventHandler::triggerEconomicEvent(Kingdom& kingdom) {
         // Inflation decrease
         economy.setInflationRate(economy.getInflationRate() - 3);
 
-        std::cout << "Kingdom lost " << treasuryReduction << " gold due to economic slowdown." << std::endl;
-        std::cout << "Inflation rate decreased to " << economy.getInflationRate() << "%." << std::endl;
+        cout << "Kingdom lost " << treasuryReduction << " gold due to economic slowdown." << endl;
+        cout << "Inflation rate decreased to " << economy.getInflationRate() << "%." << endl;
 
         kingdom.getPopulation().decreaseHappiness(10);
 
         // Response options
-        std::cout << "\nHow will you respond to the recession?\n";
-        std::cout << "1. Lower taxes to stimulate growth\n";
-        std::cout << "2. Maintain current taxes\n";
-        std::cout << "3. Raise taxes to cover losses\n";
+        cout << "\nHow will you respond to the recession?\n";
+        cout << "1. Lower taxes to stimulate growth\n";
+        cout << "2. Maintain current taxes\n";
+        cout << "3. Raise taxes to cover losses\n";
 
         int choice;
-        std::cin >> choice;
+        cin >> choice;
 
         if (choice == 1) {
             int oldTaxRate = economy.getTaxRate();
             economy.setTaxRate(oldTaxRate - 5);
             kingdom.getPopulation().increaseHappiness(8);
-            std::cout << "Lowered tax rate to " << economy.getTaxRate() << "%. People are pleased." << std::endl;
+            cout << "Lowered tax rate to " << economy.getTaxRate() << "%. People are pleased." << endl;
         }
         else if (choice == 3) {
             int oldTaxRate = economy.getTaxRate();
             economy.setTaxRate(oldTaxRate + 5);
             kingdom.getPopulation().decreaseHappiness(8);
-            std::cout << "Raised tax rate to " << economy.getTaxRate() << "%. People are displeased." << std::endl;
+            cout << "Raised tax rate to " << economy.getTaxRate() << "%. People are displeased." << endl;
         }
         else {
-            std::cout << "Maintaining current tax rate." << std::endl;
+            cout << "Maintaining current tax rate." << endl;
         }
         break;
     }
     case 2: {
-        std::cout << "Foreign traders have arrived with exotic goods!" << std::endl;
+        cout << "Foreign traders have arrived with exotic goods!" << endl;
 
         // Trade opportunity
-        std::cout << "\nDo you wish to trade with them?\n";
-        std::cout << "1. Yes (spend gold for resources)\n";
-        std::cout << "2. No\n";
+        cout << "\nDo you wish to trade with them?\n";
+        cout << "1. Yes (spend gold for resources)\n";
+        cout << "2. No\n";
 
         int choice;
-        std::cin >> choice;
+        cin >> choice;
 
         if (choice == 1) {
             int tradeCost = 200 + rand() % 301;  // 200-500 gold
@@ -359,20 +359,20 @@ void EventHandler::triggerEconomicEvent(Kingdom& kingdom) {
                 kingdom.getResources().addStone(stoneGain);
                 kingdom.getResources().addIron(ironGain);
 
-                std::cout << "Spent " << tradeCost << " gold and received:" << std::endl;
-                std::cout << "- " << foodGain << " food" << std::endl;
-                std::cout << "- " << woodGain << " wood" << std::endl;
-                std::cout << "- " << stoneGain << " stone" << std::endl;
-                std::cout << "- " << ironGain << " iron" << std::endl;
+                cout << "Spent " << tradeCost << " gold and received:" << endl;
+                cout << "- " << foodGain << " food" << endl;
+                cout << "- " << woodGain << " wood" << endl;
+                cout << "- " << stoneGain << " stone" << endl;
+                cout << "- " << ironGain << " iron" << endl;
 
                 kingdom.getPopulation().increaseHappiness(3);
             }
             else {
-                std::cout << "Not enough gold to trade!" << std::endl;
+                cout << "Not enough gold to trade!" << endl;
             }
         }
         else {
-            std::cout << "You decline the trade offer. The foreign traders move on." << std::endl;
+            cout << "You decline the trade offer. The foreign traders move on." << endl;
         }
         break;
     }
